@@ -1,25 +1,29 @@
 {
   "expo": {
-    "name": "GluecksradApp",
-    "slug": "GluecksradApp",
-    "version": "1.0.0",
+    "name": "Glücksrad Pro",
+    "slug": "gluecksrad-pro",
+    "version": "1.0.4",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "gluecksradapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "de.riwebandsoftware.gluecksradpro"
     },
     "android": {
+      "package": "de.riwebandsoftware.gluecksradpro",
+      "versionCode": 15,
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "backgroundColor": "#0A0A0F",
+        "foregroundImage": "./assets/images/icon.png"
       },
-      "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "navigationBar": {
+        "backgroundColor": "#0A0A0F",
+        "barStyle": "light-content"
+      },
+      "edgeToEdgeEnabled": false
     },
     "web": {
       "output": "static",
@@ -30,19 +34,29 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
+          "backgroundColor": "#0A0A0F",
           "dark": {
             "backgroundColor": "#000000"
           }
         }
-      ]
+      ],
+      "expo-localization"
     ],
     "experiments": {
-      "typedRoutes": true,
-      "reactCompiler": true
+      "typedRoutes": true
+    },
+    "androidStatusBar": {
+      "backgroundColor": "#0A0A0F",
+      "barStyle": "light-content"
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "de252d0c-0fa8-4322-b404-17ae4cdb75d8"
+      }
     }
   }
 }
