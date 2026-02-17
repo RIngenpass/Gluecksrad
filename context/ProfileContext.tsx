@@ -18,6 +18,7 @@ type ProfileContextType = {
   setProfile: (name: string) => void;
   updateItems: (items: Item[]) => void;
   addProfile: (name: string) => void;
+  deleteProfile: (name: string) => void; // Neu hinzugefügt
   resetToDefault: () => void;
 };
 
@@ -36,6 +37,7 @@ export const ProfileContext = createContext<ProfileContextType>({
   setProfile: () => {},
   updateItems: () => {},
   addProfile: () => {},
+  deleteProfile: () => {}, // Initialwert
   resetToDefault: () => {},
 });
 
@@ -44,7 +46,7 @@ const STORAGE_KEY = 'GLUECKSRAD_PROFILES_V2';
 export const ProfileProvider = ({ children }: any) => {
   const [profile, setProfile] = useState<string>('Standard');
   const [profiles, setProfiles] = useState<ProfilesType>(DEFAULT_DATA);
-  const [isLoaded, setIsLoaded] = useState(false); // Verhindert frühzeitiges Überspeichern
+  const [isLoaded, setIsLoaded] = useState(false);
 
   // 1. Beim App-Start laden
   useEffect(() => {
@@ -53,26 +55,26 @@ export const ProfileProvider = ({ children }: any) => {
         const data = await AsyncStorage.getItem(STORAGE_KEY);
         if (data) {
           const parsed = JSON.parse(data);
-          // Nur setzen, wenn das Objekt nicht komplett leer ist
           if (Object.keys(parsed).length > 0) {
             setProfiles(parsed);
+            // Sicherstellen, dass das aktive Profil auch existiert
+            const firstKey = Object.keys(parsed)[0];
+            setProfile(firstKey);
           }
         } else {
-          // Falls noch nie etwas gespeichert wurde (erster Start)
-          // Bleibt es bei DEFAULT_DATA (bereits im State initialisiert)
           await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_DATA));
         }
       } catch (e) {
         console.error("Fehler beim Laden:", e);
       } finally {
-        setIsLoaded(true); // Laden abgeschlossen
+        setIsLoaded(true);
       }
     };
 
     loadData();
   }, []);
 
-  // 2. Speichern nur, wenn der Ladevorgang durch ist
+  // 2. Speichern bei Änderungen
   useEffect(() => {
     if (isLoaded) {
       const saveData = async () => {
@@ -103,6 +105,26 @@ export const ProfileProvider = ({ children }: any) => {
     }
   };
 
+  // --- NEU: PROFIL LÖSCHEN ---
+  const deleteProfile = (name: string) => {
+    setProfiles(prev => {
+      const newProfiles = { ...prev };
+      delete newProfiles[name];
+
+      // Falls das gelöschte Profil gerade aktiv war:
+      if (profile === name) {
+        const remainingKeys = Object.keys(newProfiles);
+        if (remainingKeys.length > 0) {
+          setProfile(remainingKeys[0]); // Zum nächsten verfügbaren wechseln
+        } else {
+          // Fallback, falls alles gelöscht wurde (sollte durch UI verhindert werden)
+          return DEFAULT_DATA;
+        }
+      }
+      return newProfiles;
+    });
+  };
+
   const resetToDefault = () => {
     setProfiles(DEFAULT_DATA);
     setProfile('Standard');
@@ -116,6 +138,7 @@ export const ProfileProvider = ({ children }: any) => {
         setProfile,
         updateItems,
         addProfile,
+        deleteProfile, // Hier exportiert
         resetToDefault,
       }}
     >

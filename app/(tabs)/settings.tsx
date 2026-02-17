@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useContext, useState } from 'react';
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -13,7 +14,7 @@ import {
 } from 'react-native';
 import { LanguageContext } from '../../context/LanguageContext';
 import { Item, ProfileContext } from '../../context/ProfileContext';
-import { ThemeContext } from '../../context/ThemeContext'; // Importiert
+import { ThemeContext } from '../../context/ThemeContext';
 import { translations } from '../../utils/translations';
 
 const COLORS = [
@@ -30,16 +31,16 @@ export default function SettingsScreen() {
     setProfile,
     updateItems,
     addProfile,
+    deleteProfile, // Stelle sicher, dass dies im ProfileContext existiert!
   } = useContext(ProfileContext);
 
   const isDark = theme === 'dark';
-  const t = translations[language];
+  const t = translations[language] || translations.DE;
   const items: Item[] = profiles[profile] || [];
 
   const [newName, setNewName] = useState('');
   const [newProfileName, setNewProfileName] = useState('');
 
-  // Dynamische Farben basierend auf dem Theme
   const themeStyles = {
     bg: isDark ? '#0A0A0F' : '#f2f2f2',
     card: isDark ? '#161621' : '#ffffff',
@@ -49,11 +50,12 @@ export default function SettingsScreen() {
     inputBg: isDark ? '#161621' : '#e8e8e8',
   };
 
-  const languages = [
-    { code: 'de', label: 'DE', flag: '🇩🇪' },
-    { code: 'en', label: 'EN', flag: '🇺🇸' },
-    { code: 'th', label: 'TH', flag: '🇹🇭' },
-  ];
+const languages = [
+  { code: 'DE', label: 'DE', flag: '🇩🇪' },
+  { code: 'EN', label: 'EN', flag: '🇺🇸' },
+  { code: 'TH', label: 'TH', flag: '🇹🇭' },
+] as const;
+
 
   const addParticipant = () => {
     if (!newName.trim()) return;
@@ -65,6 +67,21 @@ export default function SettingsScreen() {
     };
     updateItems([...items, newItem]);
     setNewName('');
+  };
+
+  const handleDeleteProfile = (profileName: string) => {
+    Alert.alert(
+      profileName,
+      language === 'DE' ? 'Dieses Profil wirklich löschen?' : 'Delete this profile?',
+      [
+        { text: 'Abbrechen', style: 'cancel' },
+        { 
+          text: 'Löschen', 
+          style: 'destructive', 
+          onPress: () => deleteProfile(profileName) 
+        },
+      ]
+    );
   };
 
   const updateWeight = (id: string, delta: number) => {
@@ -119,9 +136,9 @@ export default function SettingsScreen() {
 
           {/* PROFILE SECTION */}
           <View style={styles.sectionHeader}>
-                      <Text style={[styles.sectionTitle, { color: themeStyles.text, marginBottom: 15 }]}>
-  {t.profiles}
-</Text>
+            <Text style={[styles.sectionTitle, { color: themeStyles.text }]}>
+              {t.profiles}
+            </Text>
             <View style={[styles.badge, { backgroundColor: isDark ? '#1c1c24' : '#ddd' }]}>
               <Text style={styles.badgeText}>{Object.keys(profiles).length}</Text>
             </View>
@@ -129,29 +146,40 @@ export default function SettingsScreen() {
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.profileList}>
             {Object.keys(profiles).map((p) => (
-              <Pressable
-                key={p}
-                onPress={() => setProfile(p)}
-                style={[
-                  styles.profileCard, 
-                  { backgroundColor: themeStyles.card, borderColor: themeStyles.border },
-                  profile === p && styles.profileActive
-                ]}
-              >
-                <Text style={[
-                  styles.profileText, 
-                  { color: themeStyles.subText },
-                  profile === p && styles.profileTextActive
-                ]}>
-                  {p}
-                </Text>
-              </Pressable>
+              <View key={p} style={styles.profileWrapper}>
+                <Pressable
+                  onPress={() => setProfile(p)}
+                  style={[
+                    styles.profileCard, 
+                    { backgroundColor: themeStyles.card, borderColor: themeStyles.border },
+                    profile === p && styles.profileActive
+                  ]}
+                >
+                  <Text style={[
+                    styles.profileText, 
+                    { color: themeStyles.subText },
+                    profile === p && styles.profileTextActive
+                  ]}>
+                    {p}
+                  </Text>
+                </Pressable>
+                
+                {/* Delete Icon für Profile (nur wenn mehr als 1 Profil existiert) */}
+                {Object.keys(profiles).length > 1 && (
+                  <Pressable 
+                    onPress={() => handleDeleteProfile(p)} 
+                    style={styles.deleteProfileBadge}
+                  >
+                    <Ionicons name="close-circle" size={22} color="#ff4d4d" />
+                  </Pressable>
+                )}
+              </View>
             ))}
           </ScrollView>
 
           <View style={[styles.inputWrapper, { backgroundColor: themeStyles.inputBg, borderColor: themeStyles.border }]}>
             <TextInput
-              placeholder="Neues Profil..."
+              placeholder={t.newProfile}
               placeholderTextColor={isDark ? "#666" : "#999"}
               value={newProfileName}
               onChangeText={setNewProfileName}
@@ -174,8 +202,8 @@ export default function SettingsScreen() {
 
           {/* PARTICIPANTS SECTION */}
           <Text style={[styles.sectionTitle, { color: themeStyles.text, marginBottom: 15 }]}>
-  {t.participants}
-</Text>
+            {t.participants}
+          </Text>
 
           <View style={[styles.inputWrapper, { backgroundColor: themeStyles.inputBg, borderColor: themeStyles.border }]}>
             <TextInput
@@ -203,7 +231,7 @@ export default function SettingsScreen() {
 
                 <View style={styles.controlsRow}>
                   <View style={[styles.weightContainer, { backgroundColor: isDark ? '#1c1c2a' : '#f9f9f9' }]}>
-                    <Text style={styles.weightLabel}>Gewichtung</Text>
+                    <Text style={styles.weightLabel}>{t.chance || 'Gewichtung'}</Text>
                     <View style={styles.weightControls}>
                       <Pressable style={styles.stepBtn} onPress={() => updateWeight(item.id, -1)}>
                         <Ionicons name="remove" size={16} color="#fff" />
@@ -298,13 +326,24 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   badgeText: { color: '#00e0ff', fontSize: 12, fontWeight: 'bold' },
-  profileList: { marginBottom: 15 },
+  profileList: { marginBottom: 20 },
+  profileWrapper: {
+    position: 'relative',
+    marginRight: 15,
+    paddingTop: 8,
+  },
   profileCard: {
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 16,
-    marginRight: 10,
     borderWidth: 1,
+  },
+  deleteProfileBadge: {
+    position: 'absolute',
+    top: 0,
+    right: -8,
+    zIndex: 10,
+    backgroundColor: 'transparent',
   },
   profileActive: {
     backgroundColor: '#00e0ff',

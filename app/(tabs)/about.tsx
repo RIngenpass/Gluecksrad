@@ -16,102 +16,57 @@ export default function AboutScreen() {
   const { theme } = useContext(ThemeContext);
   const { language } = useContext(LanguageContext);
 
+  // Fallback auf DE, falls eine Sprache nicht gefunden wird
   const t = translations[language] || translations.DE;
-
   const dark = theme === 'dark';
 
-  const openPaypalCoffee = () => {
-    Linking.openURL('https://paypal.me/riwebandsoftware/3');
-  };
-
-  const openPaypalFree = () => {
-    Linking.openURL('https://paypal.me/riwebandsoftware');
-  };
-
-  const openWebsite = () => {
-    Linking.openURL('https://www.rene-ingenpass.de');
-  };
+  const openPaypalCoffee = () => Linking.openURL('https://paypal.me/riwebandsoftware/3');
+  const openPaypalFree = () => Linking.openURL('https://paypal.me/riwebandsoftware');
+  const openWebsite = () => Linking.openURL('https://www.rene-ingenpass.de');
 
   return (
-    <SafeAreaView
-      style={[
-        styles.container,
-        { backgroundColor: dark ? '#0A0A0F' : '#f2f2f2' },
-      ]}
-    >
-      <Text
-        style={[
-          styles.title,
-          { color: dark ? '#fff' : '#000' },
-        ]}
-      >
-        Über diese App
+    <SafeAreaView style={[styles.container, { backgroundColor: dark ? '#0A0A0F' : '#f2f2f2' }]}>
+      
+      {/* Übersetzter Titel */}
+      <Text style={[styles.title, { color: dark ? '#fff' : '#000' }]}>
+        {t.aboutTitle}
       </Text>
 
-      <Text
-        style={[
-          styles.text,
-          { color: dark ? '#aaa' : '#555' },
-        ]}
-      >
-        Dieses Glücksrad wurde mit React Native und Expo entwickelt.
-        {'\n'}
-        Sie ist und bleibt werbefrei.
+      {/* Übersetzte Beschreibung */}
+      <Text style={[styles.text, { color: dark ? '#aaa' : '#555' }]}>
+        {t.aboutDescription}
       </Text>
 
-      <Text
-        style={[
-          styles.text,
-          { color: dark ? '#aaa' : '#555' },
-        ]}
-      >
-        ☕ Wenn du möchtest, kannst du mir einen Kaffee spendieren:
+      {/* Übersetzter Kaffee-Text */}
+      <Text style={[styles.text, { color: dark ? '#aaa' : '#555' }]}>
+        {t.coffeeText}
       </Text>
 
       {/* 3€ Button */}
       <Pressable
-        style={[
-          styles.button,
-          { backgroundColor: '#4facfe' },
-        ]}
+        style={[styles.button, { backgroundColor: '#4facfe' }]}
         onPress={openPaypalCoffee}
       >
         <Ionicons name="cafe-outline" size={18} color="#fff" />
-        <Text style={styles.buttonText}>
-          Kaffee (3 €)
-        </Text>
+        <Text style={styles.buttonText}>{t.coffeeBtn}</Text>
       </Pressable>
 
       {/* Freier Betrag */}
       <Pressable
-        style={[
-          styles.button,
-          { backgroundColor: '#10AC84' },
-        ]}
+        style={[styles.button, { backgroundColor: '#10AC84' }]}
         onPress={openPaypalFree}
       >
         <Ionicons name="heart-outline" size={18} color="#fff" />
-        <Text style={styles.buttonText}>
-          Freier Betrag
-        </Text>
+        <Text style={styles.buttonText}>{t.freeAmountBtn}</Text>
       </Pressable>
 
       <View style={{ marginTop: 40 }}>
-        <Text
-          style={[
-            styles.version,
-            { color: dark ? '#666' : '#888' },
-          ]}
-        >
-          Version 1.0.0
+        {/* Version mit Übersetzung */}
+        <Text style={[styles.version, { color: dark ? '#666' : '#888' }]}>
+          {t.version} 1.0.0
         </Text>
 
-        <Text
-          style={[
-            styles.version,
-            { color: dark ? '#666' : '#888' },
-          ]}
-        >
+        <Text style={[styles.version, { color: dark ? '#666' : '#888' }]}>
           R.I. Web & Software Entwicklung
         </Text>
 

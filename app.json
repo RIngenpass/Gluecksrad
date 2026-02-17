@@ -2,7 +2,7 @@
   "expo": {
     "name": "Glücksrad Pro",
     "slug": "gluecksrad-pro",
-    "version": "1.0.4",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "gluecksradapp",
@@ -14,14 +14,10 @@
     },
     "android": {
       "package": "de.riwebandsoftware.gluecksradpro",
-      "versionCode": 15,
+      "versionCode": 1,
       "adaptiveIcon": {
         "backgroundColor": "#0A0A0F",
         "foregroundImage": "./assets/images/icon.png"
-      },
-      "navigationBar": {
-        "backgroundColor": "#0A0A0F",
-        "barStyle": "light-content"
       },
       "edgeToEdgeEnabled": false
     },

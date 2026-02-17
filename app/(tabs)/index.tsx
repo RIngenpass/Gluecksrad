@@ -27,12 +27,12 @@ export default function HomeScreen() {
   const items = profiles[profile] || [];
 
   // 🔐 Sicherer Übersetzungszugriff
-  const langKey =
-    language && translations[language.toUpperCase()]
-      ? language.toUpperCase()
-      : 'EN';
+// Define this once to reuse it
+type LanguageKey = keyof typeof translations;
 
-  const t = translations[langKey];
+// Inside your component:
+const langKey = (language?.toUpperCase() as LanguageKey) || 'EN';
+const t = translations[langKey] || translations['EN'];
 
   // 🔄 Spin Reset bei Profilwechsel
   useEffect(() => {
